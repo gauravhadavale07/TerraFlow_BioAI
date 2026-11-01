@@ -49,7 +49,7 @@ def set_canvas_bg(slide):
 def add_slide_header(slide, slide_num, category, title, subtitle):
     """Adds a human-designed, crystal clear header with large readable fonts."""
     # Top Category Pill / Tracker
-    badge = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(0.32), Inches(3.6), Inches(0.32))
+    badge = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(0.32), Inches(4.2), Inches(0.32))
     badge.fill.solid()
     badge.fill.fore_color.rgb = TAG_BG_BLUE
     badge.line.fill.background()
@@ -58,9 +58,10 @@ def add_slide_header(slide, slide_num, category, title, subtitle):
     tf_b.word_wrap = True
     tf_b.margin_left = tf_b.margin_right = tf_b.margin_top = tf_b.margin_bottom = 0
     p_b = tf_b.paragraphs[0]
-    p_b.text = f"SLIDE 0{slide_num}  •  {category.upper()}"
+    num_str = f"0{slide_num}" if slide_num < 10 else f"{slide_num}"
+    p_b.text = f"SLIDE {num_str}  •  {category.upper()}"
     p_b.font.name = "Segoe UI"
-    p_b.font.size = Pt(10)
+    p_b.font.size = Pt(9.5)
     p_b.font.bold = True
     p_b.font.color.rgb = ACCENT_NAVY
     p_b.alignment = PP_ALIGN.CENTER
@@ -647,11 +648,37 @@ def build_deck():
     p_bs.font.color.rgb = ACCENT_NAVY
 
     # =========================================================================
-    # SLIDE 5: HARDWARE CORE (STM32 & ESP32 Dual-Controller)
+    # SLIDE 5: MASTER SYSTEM ARCHITECTURE BLUEPRINT (The AI Architecture Diagram)
+    # Added after Slide 4, with NO explanatory text on the side
     # =========================================================================
     s5 = prs.slides.add_slide(blank_layout)
     set_canvas_bg(s5)
-    add_slide_header(s5, 5, "Embedded Hardware Design",
+    add_slide_header(s5, 5, "System Architecture Blueprint",
+                     "TerraFlow BioAI: End-to-End System Architecture",
+                     "Master cyber-physical data pipelines, multi-parametric decision engines, and physical actuation loops")
+
+    arch_img_path = os.path.join(BASE_DIR, "extracted_assets", "report_img250.jpg")
+    if not os.path.exists(arch_img_path):
+        arch_img_path = os.path.join(BASE_DIR, "AdobeExpressPhotos_a369f03e02f64518807f918bd2532900_CopyEdited.png")
+
+    img_h = Inches(5.60)
+    img_w = img_h * (1672.0 / 941.0)
+    card_w = img_w + Inches(0.30)
+    card_h = img_h + Inches(0.20)
+    card_x = (Inches(13.333) - card_w) / 2
+    card_y = Inches(1.48)
+
+    create_white_card(s5, card_x, card_y, card_w, card_h, top_accent=ACCENT_NAVY)
+
+    if os.path.exists(arch_img_path):
+        s5.shapes.add_picture(arch_img_path, card_x + Inches(0.15), card_y + Inches(0.10), height=img_h)
+
+    # =========================================================================
+    # SLIDE 6: EMBEDDED HARDWARE DESIGN (STM32 & ESP32 Dual-Controller)
+    # =========================================================================
+    s6 = prs.slides.add_slide(blank_layout)
+    set_canvas_bg(s6)
+    add_slide_header(s6, 6, "Embedded Hardware Design",
                      "Dual-Controller Hardware Topology: STM32 & ESP32",
                      "Physical division of responsibilities: Bare-metal deterministic safety vs high-speed wireless connectivity")
 
@@ -660,20 +687,20 @@ def build_deck():
 
     # Left Column: STM32 (Local Safety Authority)
     add_left = Inches(0.8)
-    create_white_card(s5, add_left, Inches(1.85), hw_w, hw_h, top_accent=ACCENT_NAVY)
+    create_white_card(s6, add_left, Inches(1.85), hw_w, hw_h, top_accent=ACCENT_NAVY)
 
-    tb_s5_1 = s5.shapes.add_textbox(add_left + Inches(0.3), Inches(1.95), hw_w - Inches(0.6), hw_h - Inches(0.2))
-    tf_s5_1 = tb_s5_1.text_frame
-    tf_s5_1.word_wrap = True
+    tb_s6_1 = s6.shapes.add_textbox(add_left + Inches(0.3), Inches(1.95), hw_w - Inches(0.6), hw_h - Inches(0.2))
+    tf_s6_1 = tb_s6_1.text_frame
+    tf_s6_1.word_wrap = True
 
-    p_stm_tag = tf_s5_1.paragraphs[0]
+    p_stm_tag = tf_s6_1.paragraphs[0]
     p_stm_tag.text = "LOCAL SAFETY & ACTUATION AUTHORITY"
     p_stm_tag.font.name = "Segoe UI"
     p_stm_tag.font.size = Pt(11)
     p_stm_tag.font.bold = True
     p_stm_tag.font.color.rgb = ACCENT_NAVY
 
-    p_stm_h = tf_s5_1.add_paragraph()
+    p_stm_h = tf_s6_1.add_paragraph()
     p_stm_h.text = "STM32F103C8T6 (ARM Cortex-M3 @ 72 MHz)"
     p_stm_h.font.name = "Segoe UI"
     p_stm_h.font.size = Pt(15)
@@ -689,7 +716,7 @@ def build_deck():
         ("Deterministic Safety Watchdog (IWDG):", "180s hard timeout and float switch interlock prevent dry-run damage and over-watering.")
     ]
     for lbl, desc in stm_features:
-        p_pt = tf_s5_1.add_paragraph()
+        p_pt = tf_s6_1.add_paragraph()
         p_pt.text = f"•  {lbl} "
         p_pt.font.name = "Segoe UI"
         p_pt.font.size = Pt(11)
@@ -704,20 +731,20 @@ def build_deck():
 
     # Right Column: ESP32 (Wi-Fi & Cloud Gateway)
     esp_left = Inches(6.81)
-    create_white_card(s5, esp_left, Inches(1.85), hw_w, hw_h, top_accent=ACCENT_BLUE)
+    create_white_card(s6, esp_left, Inches(1.85), hw_w, hw_h, top_accent=ACCENT_BLUE)
 
-    tb_s5_2 = s5.shapes.add_textbox(esp_left + Inches(0.3), Inches(1.95), hw_w - Inches(0.6), hw_h - Inches(0.2))
-    tf_s5_2 = tb_s5_2.text_frame
-    tf_s5_2.word_wrap = True
+    tb_s6_2 = s6.shapes.add_textbox(esp_left + Inches(0.3), Inches(1.95), hw_w - Inches(0.6), hw_h - Inches(0.2))
+    tf_s6_2 = tb_s6_2.text_frame
+    tf_s6_2.word_wrap = True
 
-    p_esp_tag = tf_s5_2.paragraphs[0]
+    p_esp_tag = tf_s6_2.paragraphs[0]
     p_esp_tag.text = "IOT TELEMETRY & CLOUD GATEWAY"
     p_esp_tag.font.name = "Segoe UI"
     p_esp_tag.font.size = Pt(11)
     p_esp_tag.font.bold = True
     p_esp_tag.font.color.rgb = ACCENT_BLUE
 
-    p_esp_h = tf_s5_2.add_paragraph()
+    p_esp_h = tf_s6_2.add_paragraph()
     p_esp_h.text = "ESP32 DevKit (Dual-Core Tensilica @ 240 MHz)"
     p_esp_h.font.name = "Segoe UI"
     p_esp_h.font.size = Pt(15)
@@ -733,7 +760,7 @@ def build_deck():
         ("Fail-Safe Offline Isolation:", "If Wi-Fi drops, ESP32 buffers data; the STM32 autonomously continues local irrigation safely.")
     ]
     for lbl, desc in esp_features:
-        p_pt = tf_s5_2.add_paragraph()
+        p_pt = tf_s6_2.add_paragraph()
         p_pt.text = f"•  {lbl} "
         p_pt.font.name = "Segoe UI"
         p_pt.font.size = Pt(11)
@@ -747,9 +774,9 @@ def build_deck():
         run.font.color.rgb = TEXT_BODY
 
     # Bottom Full-Width Card: Power Architecture & MOSFET Circuit
-    create_white_card(s5, Inches(0.8), Inches(5.60), Inches(11.733), Inches(1.50), top_accent=ACCENT_GREEN)
+    create_white_card(s6, Inches(0.8), Inches(5.60), Inches(11.733), Inches(1.50), top_accent=ACCENT_GREEN)
 
-    tb_pa = s5.shapes.add_textbox(Inches(1.05), Inches(5.70), Inches(11.2), Inches(0.3))
+    tb_pa = s6.shapes.add_textbox(Inches(1.05), Inches(5.70), Inches(11.2), Inches(0.3))
     tf_pa = tb_pa.text_frame
     p_pah = tf_pa.paragraphs[0]
     p_pah.text = "POWER ARCHITECTURE & SOLID-STATE ACTUATION CIRCUIT"
@@ -765,7 +792,7 @@ def build_deck():
         ("IRLZ44N MOSFET Driver", "220Ω Gate + 1N4007 Diode + 12V Pump", Inches(9.45))
     ]
     for i, (ptext, psub, px) in enumerate(pw_stages):
-        p_blk = s5.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, px, Inches(6.05), Inches(2.45), Inches(0.85))
+        p_blk = s6.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, px, Inches(6.05), Inches(2.45), Inches(0.85))
         p_blk.fill.solid()
         p_blk.fill.fore_color.rgb = CARD_HOVER
         p_blk.line.color.rgb = CARD_BORDER
@@ -790,17 +817,17 @@ def build_deck():
 
         if i < 3:
             arr_px = px + Inches(2.50)
-            arr_p = s5.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, arr_px, Inches(6.35), Inches(0.20), Inches(0.20))
+            arr_p = s6.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, arr_px, Inches(6.35), Inches(0.20), Inches(0.20))
             arr_p.fill.solid()
             arr_p.fill.fore_color.rgb = ACCENT_BLUE
             arr_p.line.fill.background()
 
     # =========================================================================
-    # SLIDE 6: MACHINE LEARNING INTELLIGENCE
+    # SLIDE 7: MACHINE LEARNING INTELLIGENCE
     # =========================================================================
-    s6 = prs.slides.add_slide(blank_layout)
-    set_canvas_bg(s6)
-    add_slide_header(s6, 6, "Machine Learning Decision Support",
+    s7 = prs.slides.add_slide(blank_layout)
+    set_canvas_bg(s7)
+    add_slide_header(s7, 7, "Machine Learning Decision Support",
                      "Sensor-Aligned Machine Learning Intelligence",
                      "4 specialized models trained on sensor-compatible feature vectors and evaluated with 5-fold cross-validation")
 
@@ -829,18 +856,18 @@ def build_deck():
          "Classifies soil texture into Black (Vertisol), Red (Alfisol), Alluvial, Sandy, Clayey, or Loamy.")
     ]
 
-    positions_s6 = [
+    positions_s7 = [
         (Inches(0.8), Inches(1.85)),
         (Inches(6.81), Inches(1.85)),
         (Inches(0.8), Inches(4.25)),
         (Inches(6.81), Inches(4.25))
     ]
 
-    for (pos, (tag, name, algo, metrics, col, feat, out)) in zip(positions_s6, ml_models):
+    for (pos, (tag, name, algo, metrics, col, feat, out)) in zip(positions_s7, ml_models):
         x, y = pos
-        create_white_card(s6, x, y, m_w, m_h, top_accent=col)
+        create_white_card(s7, x, y, m_w, m_h, top_accent=col)
 
-        tb_m = s6.shapes.add_textbox(x + Inches(0.25), y + Inches(0.12), m_w - Inches(0.5), m_h - Inches(0.25))
+        tb_m = s7.shapes.add_textbox(x + Inches(0.25), y + Inches(0.12), m_w - Inches(0.5), m_h - Inches(0.25))
         tf_m = tb_m.text_frame
         tf_m.word_wrap = True
 
@@ -884,12 +911,12 @@ def build_deck():
         run_o.font.color.rgb = TEXT_BODY
 
     # Bottom Agronomic Honesty Badge
-    hon_card = s6.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.60), Inches(11.733), Inches(0.65))
+    hon_card = s7.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.60), Inches(11.733), Inches(0.65))
     hon_card.fill.solid()
     hon_card.fill.fore_color.rgb = TAG_BG_GREEN
     hon_card.line.fill.background()
 
-    tb_h = s6.shapes.add_textbox(Inches(1.0), Inches(6.63), Inches(11.3), Inches(0.58))
+    tb_h = s7.shapes.add_textbox(Inches(1.0), Inches(6.63), Inches(11.3), Inches(0.58))
     tf_h = tb_h.text_frame
     tf_h.word_wrap = True
     p_h = tf_h.paragraphs[0]
@@ -900,11 +927,11 @@ def build_deck():
     p_h.font.color.rgb = RGBColor(6, 95, 70)
 
     # =========================================================================
-    # SLIDE 7: WEB APPLICATION & OPERATOR CONSOLE
+    # SLIDE 8: WEB APPLICATION & OPERATOR CONSOLE
     # =========================================================================
-    s7 = prs.slides.add_slide(blank_layout)
-    set_canvas_bg(s7)
-    add_slide_header(s7, 7, "Web Application & Control Console",
+    s8 = prs.slides.add_slide(blank_layout)
+    set_canvas_bg(s8)
+    add_slide_header(s8, 8, "Web Application & Control Console",
                      "Real-Time React Dashboard & Closed-Loop UI",
                      "Connected operator console with live sensor gauges, zone configuration, AI advisory cards, and historical trends")
 
@@ -934,9 +961,9 @@ def build_deck():
 
     for i, (col_title, accent, bullets) in enumerate(cols_dash):
         left = Inches(0.8 + i * 3.99)
-        create_white_card(s7, left, Inches(1.85), card_dw, card_dh, top_accent=accent)
+        create_white_card(s8, left, Inches(1.85), card_dw, card_dh, top_accent=accent)
 
-        tb_d = s7.shapes.add_textbox(left + Inches(0.25), Inches(2.0), card_dw - Inches(0.5), card_dh - Inches(0.3))
+        tb_d = s8.shapes.add_textbox(left + Inches(0.25), Inches(2.0), card_dw - Inches(0.5), card_dh - Inches(0.3))
         tf_d = tb_d.text_frame
         tf_d.word_wrap = True
 
@@ -962,12 +989,11 @@ def build_deck():
             run.font.color.rgb = TEXT_BODY
 
     # =========================================================================
-    # SLIDE 8: CORE TECHNICALITIES & EXAMINER VIVA DEFENSE GUIDE
-    # Matches the user's highlighted Slide 07 from Final_Presentation.pptx
+    # SLIDE 9: CORE TECHNICALITIES & EXAMINER VIVA DEFENSE GUIDE
     # =========================================================================
-    s8 = prs.slides.add_slide(blank_layout)
-    set_canvas_bg(s8)
-    add_slide_header(s8, 8, "Core Technicalities & Academic Defense",
+    s9 = prs.slides.add_slide(blank_layout)
+    set_canvas_bg(s9)
+    add_slide_header(s9, 9, "Core Technicalities & Academic Defense",
                      "Core Innovations, Viva Defense & Conclusion",
                      "Why TerraFlow BioAI represents a true cyber-physical closed loop and answers to key examiner questions")
 
@@ -975,9 +1001,9 @@ def build_deck():
     card_8h = Inches(4.55)
 
     # Left Column: Core Technical Novelties
-    create_white_card(s8, Inches(0.8), Inches(1.85), card_8w, card_8h, top_accent=ACCENT_NAVY)
+    create_white_card(s9, Inches(0.8), Inches(1.85), card_8w, card_8h, top_accent=ACCENT_NAVY)
 
-    tb_nov = s8.shapes.add_textbox(Inches(1.05), Inches(1.95), card_8w - Inches(0.5), card_8h - Inches(0.25))
+    tb_nov = s9.shapes.add_textbox(Inches(1.05), Inches(1.95), card_8w - Inches(0.5), card_8h - Inches(0.25))
     tf_nov = tb_nov.text_frame
     tf_nov.word_wrap = True
 
@@ -1025,9 +1051,9 @@ def build_deck():
         run.font.color.rgb = TEXT_BODY
 
     # Right Column: Examiner Viva Defense Guide (The exact highlighted box!)
-    create_white_card(s8, Inches(6.81), Inches(1.85), card_8w, card_8h, top_accent=ACCENT_BLUE)
+    create_white_card(s9, Inches(6.81), Inches(1.85), card_8w, card_8h, top_accent=ACCENT_BLUE)
 
-    tb_viva = s8.shapes.add_textbox(Inches(7.06), Inches(1.95), card_8w - Inches(0.5), card_8h - Inches(0.25))
+    tb_viva = s9.shapes.add_textbox(Inches(7.06), Inches(1.95), card_8w - Inches(0.5), card_8h - Inches(0.25))
     tf_viva = tb_viva.text_frame
     tf_viva.word_wrap = True
 
@@ -1090,9 +1116,9 @@ def build_deck():
 
     for idx, (s_val, s_sub, s_col) in enumerate(stats):
         s_left = Inches(0.8 + idx * 2.98)
-        card_s = create_white_card(s8, s_left, stat_top, stat_w, stat_h, top_accent=s_col)
+        card_s = create_white_card(s9, s_left, stat_top, stat_w, stat_h, top_accent=s_col)
 
-        tb_s = s8.shapes.add_textbox(s_left + Inches(0.12), stat_top + Inches(0.08), stat_w - Inches(0.24), stat_h - Inches(0.12))
+        tb_s = s9.shapes.add_textbox(s_left + Inches(0.12), stat_top + Inches(0.08), stat_w - Inches(0.24), stat_h - Inches(0.12))
         tf_s = tb_s.text_frame
         tf_s.word_wrap = True
 
@@ -1113,12 +1139,12 @@ def build_deck():
         p_ss.space_before = Pt(1)
 
     # =========================================================================
-    # SLIDE 9: ACADEMIC REFERENCES & TECHNICAL DATASHEETS
+    # SLIDE 10: ACADEMIC REFERENCES & TECHNICAL DATASHEETS
     # Peer-reviewed literature, FAO/ICAR standards, and component datasheets
     # =========================================================================
-    s9 = prs.slides.add_slide(blank_layout)
-    set_canvas_bg(s9)
-    add_slide_header(s9, 9, "References & Technical Datasheets",
+    s10 = prs.slides.add_slide(blank_layout)
+    set_canvas_bg(s10)
+    add_slide_header(s10, 10, "References & Technical Datasheets",
                      "Academic References & Component Datasheets",
                      "Peer-reviewed literature, FAO/ICAR agronomic standards, and manufacturer datasheets underpinning TerraFlow BioAI")
 
@@ -1126,9 +1152,9 @@ def build_deck():
     card_9h = Inches(4.55)
 
     # Left Column: Academic References & Agronomic Standards
-    create_white_card(s9, Inches(0.8), Inches(1.85), card_9w, card_9h, top_accent=ACCENT_NAVY)
+    create_white_card(s10, Inches(0.8), Inches(1.85), card_9w, card_9h, top_accent=ACCENT_NAVY)
 
-    tb_ref = s9.shapes.add_textbox(Inches(1.05), Inches(1.95), card_9w - Inches(0.5), card_9h - Inches(0.25))
+    tb_ref = s10.shapes.add_textbox(Inches(1.05), Inches(1.95), card_9w - Inches(0.5), card_9h - Inches(0.25))
     tf_ref = tb_ref.text_frame
     tf_ref.word_wrap = True
 
@@ -1179,9 +1205,9 @@ def build_deck():
         run.font.color.rgb = TEXT_BODY
 
     # Right Column: Component Datasheets & Hardware Standards
-    create_white_card(s9, Inches(6.81), Inches(1.85), card_9w, card_9h, top_accent=ACCENT_BLUE)
+    create_white_card(s10, Inches(6.81), Inches(1.85), card_9w, card_9h, top_accent=ACCENT_BLUE)
 
-    tb_ds = s9.shapes.add_textbox(Inches(7.06), Inches(1.95), card_9w - Inches(0.5), card_9h - Inches(0.25))
+    tb_ds = s10.shapes.add_textbox(Inches(7.06), Inches(1.95), card_9w - Inches(0.5), card_9h - Inches(0.25))
     tf_ds = tb_ds.text_frame
     tf_ds.word_wrap = True
 
@@ -1235,12 +1261,12 @@ def build_deck():
         run.font.color.rgb = TEXT_BODY
 
     # Bottom Full-Width Research Outcome Banner
-    bot_ref_card = s9.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.52), Inches(11.733), Inches(0.72))
+    bot_ref_card = s10.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.52), Inches(11.733), Inches(0.72))
     bot_ref_card.fill.solid()
     bot_ref_card.fill.fore_color.rgb = TAG_BG_GREEN
     bot_ref_card.line.fill.background()
 
-    tb_br = s9.shapes.add_textbox(Inches(1.0), Inches(6.56), Inches(11.3), Inches(0.65))
+    tb_br = s10.shapes.add_textbox(Inches(1.0), Inches(6.56), Inches(11.3), Inches(0.65))
     tf_br = tb_br.text_frame
     tf_br.word_wrap = True
     p_br = tf_br.paragraphs[0]
