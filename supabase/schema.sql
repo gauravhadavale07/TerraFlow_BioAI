@@ -162,3 +162,4 @@ CREATE TABLE IF NOT EXISTS advisories (
 CREATE INDEX IF NOT EXISTS idx_sensor_data_zone_ts ON sensor_data(zone_id, timestamp DESC);
 CREATE INDEX IF NOT EXISTS idx_irrigation_events_zone ON irrigation_events(zone_id, start_time DESC);
 CREATE INDEX IF NOT EXISTS idx_advisories_zone ON advisories(zone_id, timestamp DESC);
+

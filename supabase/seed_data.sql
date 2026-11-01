@@ -91,3 +91,4 @@ ON CONFLICT DO NOTHING;
 INSERT INTO soil_tests (zone_id, test_date, nitrogen_kg_ha, phosphorus_kg_ha, potassium_kg_ha, ph, ec_dsm, organic_carbon_pct, is_reference_baseline)
 VALUES ('Z01', CURRENT_DATE, 70.0, 35.0, 210.0, 7.6, 0.45, 0.65, TRUE)
 ON CONFLICT DO NOTHING;
+
