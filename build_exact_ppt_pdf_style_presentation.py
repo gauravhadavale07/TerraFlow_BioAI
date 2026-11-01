@@ -290,116 +290,211 @@ def build_deck():
         p_pd.space_before = Pt(8)
 
     # =========================================================================
-    # SLIDE 3: SYSTEM ARCHITECTURE (Matches page_3.png of PPT.pdf EXACTLY)
+    # SLIDE 3: SYSTEM ARCHITECTURE (Detailed Multi-Tier Architecture & Control Flow)
+    # Re-created natively to match the complete project master architecture diagram
     # =========================================================================
     s3 = prs.slides.add_slide(blank_layout)
     set_canvas_bg(s3)
-    add_slide_header(s3, "System Architecture", "End-to-end data flow from sensors to dashboard")
 
-    # 5 Horizontal Process Boxes with arrows (Exact match to PPT.pdf page 3)
-    box_w = Inches(2.05)
-    box_h = Inches(1.2)
-    box_y = Inches(1.8)
-    arrow_w = Inches(0.35)
+    # Header with Project Metadata
+    add_slide_header(s3, "TerraFlow BioAI: System Architecture & Control Flow",
+                     "Closed-loop precision irrigation, multi-parametric agro-advisory, and deterministic edge safety (Zone Z01 | Node TF01)")
 
-    stages = [
-        ("HARDWARE", "5 Sensors + STM32", ACCENT_LIME),
-        ("ACTUATION", "MOSFET + Pump", ACCENT_AMBER),
-        ("TELEMETRY", "ESP32 Wi-Fi", ACCENT_CYAN),
-        ("BACKEND", "Node.js + Supabase", ACCENT_LIME),
-        ("INTELLIGENCE", "ML + Dashboard", ACCENT_AMBER)
+    # ── SECTION 1: PHASE 1-2 (FIELD SENSING, EMBEDDED CONTROL & CLOUD DATA) ───
+    sec1_y = Inches(1.32)
+    sec1_h = Inches(1.72)
+
+    # 5 Modular Cards
+    s1_cards = [
+        # (left, width, title, col, points)
+        (Inches(0.60), Inches(2.28), "1. FIELD SENSORS (TF01)", ACCENT_CYAN, [
+            "• Soil Moisture: Capacitive (0–3.3V)",
+            "• Soil Temp: DS18B20 (-55°C to 125°C)",
+            "• Water Quality: TDS (0–1000 ppm)",
+            "• Climate: BME280 (Temp, RH, Press)",
+            "• Flow Sensor: YF-S201 Pulse Meter"
+        ]),
+        (Inches(2.98), Inches(2.35), "2. STM32 SAFETY AUTHORITY", ACCENT_LIME, [
+            "• ARM Cortex-M3 @ 72 MHz (Bare-metal)",
+            "• On-Chip Signal Filtering & ADC Sanity",
+            "• 5-State FSM: IDLE→SENSE→EVAL→ACT",
+            "• Watchdog (IWDG) + Max Runtime Guard",
+            "• Sole Actuator: Direct MOSFET gate pin"
+        ]),
+        (Inches(5.43), Inches(2.15), "3. ESP32 CONNECTIVITY", ACCENT_AMBER, [
+            "• UART2 Bidirectional link (115200 baud)",
+            "• Wi-Fi 802.11 b/g/n + HTTPS POST",
+            "• Auto-reconnect with exp. backoff",
+            "• Telemetry buffer during network drop",
+            "• NTP time sync & advisory forwarding"
+        ]),
+        (Inches(7.68), Inches(2.15), "4. NODE.JS BACKEND API", ACCENT_LIME, [
+            "• Ingestion API: validates device JSON",
+            "• Computes live WSI, VPD, & DRI indices",
+            "• Microservice bridge to Python ML API",
+            "• Zone & crop profile management",
+            "• Serves real-time telemetry to React"
+        ]),
+        (Inches(9.93), Inches(2.80), "5. SUPABASE DATA LAYER", ACCENT_PURPLE, [
+            "• Operational DB: sensor series, pump logs, faults",
+            "• Agronomic Knowledge Base: 80+ FAO-56 rules",
+            "• 4 Soil Profiles: Field Capacity & PWP limits",
+            "• Soil Health Cards: Ingested certified lab NPK",
+            "• Calibration & threshold reference tables"
+        ])
     ]
 
-    for idx, (stitle, ssub, scol) in enumerate(stages):
-        bx = Inches(0.8 + idx * 2.42)
-        # Stage Box
-        sbox = s3.shapes.add_shape(MSO_SHAPE.RECTANGLE, bx, box_y, box_w, box_h)
-        sbox.fill.solid()
-        sbox.fill.fore_color.rgb = CARD_BG
-        sbox.line.color.rgb = scol
-        sbox.line.width = Pt(2.0)
+    for cl, cw, ct, col, cpts in s1_cards:
+        create_dark_card(s3, cl, sec1_y, cw, sec1_h)
 
-        tf_sb = sbox.text_frame
-        tf_sb.word_wrap = True
-        p_s1 = tf_sb.paragraphs[0]
-        p_s1.text = stitle
-        p_s1.font.name = "Segoe UI"
-        p_s1.font.size = Pt(12)
-        p_s1.font.bold = True
-        p_s1.font.color.rgb = scol
-        p_s1.alignment = PP_ALIGN.CENTER
+        tb = s3.shapes.add_textbox(cl + Inches(0.10), sec1_y + Inches(0.06), cw - Inches(0.18), sec1_h - Inches(0.10))
+        tf = tb.text_frame
+        tf.word_wrap = True
 
-        p_s2 = tf_sb.add_paragraph()
-        p_s2.text = ssub
-        p_s2.font.name = "Segoe UI"
-        p_s2.font.size = Pt(10.5)
-        p_s2.font.color.rgb = TEXT_SLATE
-        p_s2.alignment = PP_ALIGN.CENTER
-        p_s2.space_before = Pt(6)
+        p_t = tf.paragraphs[0]
+        p_t.text = ct
+        p_t.font.name = "Segoe UI"
+        p_t.font.size = Pt(10)
+        p_t.font.bold = True
+        p_t.font.color.rgb = col
 
-        # Connecting Arrow (for first 4 boxes)
-        if idx < 4:
-            arr_x = bx + box_w + Inches(0.02)
-            arr_y = box_y + Inches(0.45)
-            arr = s3.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, arr_x, arr_y, Inches(0.33), Inches(0.28))
-            arr.fill.solid()
-            arr.fill.fore_color.rgb = RGBColor(74, 120, 102)
-            arr.line.fill.background()
+        for pt in cpts:
+            p_p = tf.add_paragraph()
+            p_p.text = pt
+            p_p.font.name = "Segoe UI"
+            p_p.font.size = Pt(8.2)
+            p_p.font.color.rgb = TEXT_SLATE
+            p_p.space_before = Pt(1.5)
 
-    # 5 Numbered Rows Below (Exact match to PPT.pdf page 3)
-    rows = [
-        ("1", "Sensors → STM32",
-         "5 sensors continuously acquired via ADC, I2C, OneWire. STM32 filters data and runs local decision logic."),
-        ("2", "Local Control Loop",
-         "STM32 evaluates moisture + humidity + temperature thresholds. Activates MOSFET → pump if stress detected. Validates result."),
-        ("3", "Wireless Telemetry",
-         "STM32 serializes JSON over UART to ESP32. ESP sends HTTP POST to Node.js backend over Wi-Fi."),
-        ("4", "Backend Processing",
-         "Node.js computes WSI, DRI indices. Calls Python ML microservice. Stores everything in Supabase PostgreSQL."),
-        ("5", "Dashboard + AI",
-         "React dashboard polls /latest. Displays live sensor cards, charts, agro-indices, pump state, and ML irrigation prediction.")
+    # Connecting Arrows between Phase 1-2 Cards
+    arrow_xs = [Inches(2.89), Inches(5.34), Inches(7.59), Inches(9.84)]
+    for ax in arrow_xs:
+        arr = s3.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, ax, sec1_y + Inches(0.68), Inches(0.08), Inches(0.18))
+        arr.fill.solid()
+        arr.fill.fore_color.rgb = RGBColor(74, 120, 102)
+        arr.line.fill.background()
+
+    # ── SECTION 2: PHASE 3 (SOFTWARE & DECISION INTELLIGENCE) ─────────────────
+    sec2_y = Inches(3.14)
+    sec2_h = Inches(1.72)
+
+    s2_cards = [
+        (Inches(0.60), Inches(3.40), "6. WEATHER & MICROCLIMATE CONTEXT", ACCENT_CYAN, [
+            "• External Weather API: Forecast rain %, temp, humidity, wind, and ET0.",
+            "• Local Measurement (TF01, BME280): Real-time field temp, RH, and pressure.",
+            "• Dual-Stream Isolation: Maintained as separate channels (never averaged) to distinguish regional climate from microclimate canopy stress."
+        ]),
+        (Inches(4.12), Inches(3.75), "7. ML SUPPORT LAYER (Decision Support Only)", ACCENT_PURPLE, [
+            "• 4 Validated Models: XGBoost & Random Forest (90.8% - 100% Accuracy).",
+            "• Calibrated Features: In-situ moisture, rainfall context, crop Kc, and Soil Health Card lab NPK (no fabricated sensor claims).",
+            "• Output: Advisory decision + confidence % + transparent reason codes (e.g. RUN:MOISTURE_LOW, SKIP:RAIN_CONTEXT).",
+            "• Architectural Rule: ML advises; never has direct pump control authority."
+        ]),
+        (Inches(7.99), Inches(4.74), "8. SOFTWARE DECISION ENGINES (Backend Logic)", ACCENT_AMBER, [
+            "• A. Irrigation Engine: Soil deficit + Crop Kc + Weather → Target Volume (Liters) + Reason Code (RUN:MOISTURE_LOW).",
+            "• B. Crop Suitability Engine: Soil type + pH/EC + Season → Top 5 ranked crop recommendations with suitability %.",
+            "• C. Fertilizer Advisory Engine: Soil NPK test deficit + stage → Exact commercial fertilizer grade (Urea for low N, DAP for low P, 10-26-26)."
+        ])
     ]
 
-    row_start_y = Inches(3.35)
-    row_h = Inches(0.68)
+    for cl, cw, ct, col, cpts in s2_cards:
+        create_dark_card(s3, cl, sec2_y, cw, sec2_h)
 
-    for i, (num, label, desc) in enumerate(rows):
-        ry = row_start_y + Inches(i * 0.72)
+        tb = s3.shapes.add_textbox(cl + Inches(0.12), sec2_y + Inches(0.06), cw - Inches(0.24), sec2_h - Inches(0.10))
+        tf = tb.text_frame
+        tf.word_wrap = True
 
-        # Green Number Square
-        sq = s3.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), ry, Inches(0.48), Inches(0.48))
-        sq.fill.solid()
-        sq.fill.fore_color.rgb = ACCENT_LIME
-        sq.line.fill.background()
-        tf_sq = sq.text_frame
-        p_sq = tf_sq.paragraphs[0]
-        p_sq.text = num
-        p_sq.font.name = "Segoe UI"
-        p_sq.font.size = Pt(14)
-        p_sq.font.bold = True
-        p_sq.font.color.rgb = RGBColor(10, 26, 19)
-        p_sq.alignment = PP_ALIGN.CENTER
+        p_t = tf.paragraphs[0]
+        p_t.text = ct
+        p_t.font.name = "Segoe UI"
+        p_t.font.size = Pt(10)
+        p_t.font.bold = True
+        p_t.font.color.rgb = col
 
-        # Label (Green bold)
-        lbl_box = s3.shapes.add_textbox(Inches(1.45), ry - Inches(0.04), Inches(2.5), Inches(0.55))
-        tf_lbl = lbl_box.text_frame
-        tf_lbl.word_wrap = True
-        p_lbl = tf_lbl.paragraphs[0]
-        p_lbl.text = label
-        p_lbl.font.name = "Segoe UI"
-        p_lbl.font.size = Pt(12)
-        p_lbl.font.bold = True
-        p_lbl.font.color.rgb = ACCENT_LIME
+        for pt in cpts:
+            p_p = tf.add_paragraph()
+            p_p.text = pt
+            p_p.font.name = "Segoe UI"
+            p_p.font.size = Pt(8.2)
+            p_p.font.color.rgb = TEXT_SLATE
+            p_p.space_before = Pt(2)
 
-        # Description (White/Slate)
-        desc_box = s3.shapes.add_textbox(Inches(4.1), ry - Inches(0.04), Inches(8.4), Inches(0.55))
-        tf_desc = desc_box.text_frame
-        tf_desc.word_wrap = True
-        p_desc = tf_desc.paragraphs[0]
-        p_desc.text = desc
-        p_desc.font.name = "Segoe UI"
-        p_desc.font.size = Pt(11.5)
-        p_desc.font.color.rgb = TEXT_SLATE
+    # Connecting Arrows Phase 3
+    arr2_xs = [Inches(4.02), Inches(7.89)]
+    for ax in arr2_xs:
+        arr = s3.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, ax, sec2_y + Inches(0.68), Inches(0.08), Inches(0.18))
+        arr.fill.solid()
+        arr.fill.fore_color.rgb = RGBColor(74, 120, 102)
+        arr.line.fill.background()
+
+    # ── SECTION 3: PHASE 4 (ACTUATION, MONITORING & VERIFICATION) ─────────────
+    sec3_y = Inches(4.94)
+    sec3_h = Inches(1.92)
+
+    s3_cards = [
+        (Inches(0.60), Inches(4.55), "9. STM32 CLOSED-LOOP CONTROL LOGIC (\"Cloud Advises, STM32 Decides\")", ACCENT_LIME, [
+            "1. Sense & Filter: Read ADC, apply 1-D noise smoothing, verify data validity.",
+            "2. Safety Checks: Verify safe mode, watchdog status, and resting window.",
+            "3. Trigger Evaluation: Calibrated moisture drops below threshold (<35%).",
+            "4. Volumetric Budgeting: Set target liters from FAO-56 depletion: V = Δθ × A × Zr.",
+            "5. Pulse-Flow Cutoff: Terminate pump actuation when pulse count reaches target liters.",
+            "6. Verification: 3 min post-shutoff check confirms wetting front (Δθ ≥ +18%)."
+        ]),
+        (Inches(5.27), Inches(3.40), "10. FIELD ACTUATION CHAIN (Physical Hardware)", ACCENT_AMBER, [
+            "• STM32 GPIO (PB0): 3.3V logic trigger output.",
+            "• MOSFET Driver: IRLZ44N N-channel gate + 10kΩ pull-down resistor.",
+            "• DC Pump: 12V DC water pump with 1N4007 flyback diode protection.",
+            "• YF-S201 Flow Sensor: Measures delivered volume (L) in real time.",
+            "• Closed-Loop Feedback: Water to soil → Moisture sensor verifies percolation."
+        ]),
+        (Inches(8.79), Inches(3.94), "11 & 12. REACT DASHBOARD & KEY OUTCOMES", ACCENT_CYAN, [
+            "• React Console: Real-time gauges, WSI/VPD curves, ML prediction card, volumetric progress bar, and academic simulation mode.",
+            "• Key Outcomes Achieved:",
+            "  ✓ ~38% Water Conserved (FAO-56 volumetric vs timer)",
+            "  ✓ 100% Fail-Safe Safety (Zero runaway pump risk)",
+            "  ✓ Transparent Reason Codes on every decision",
+            "  ✓ Complete Offline Autonomy on bare-metal STM32"
+        ])
+    ]
+
+    for cl, cw, ct, col, cpts in s3_cards:
+        create_dark_card(s3, cl, sec3_y, cw, sec3_h)
+
+        tb = s3.shapes.add_textbox(cl + Inches(0.12), sec3_y + Inches(0.05), cw - Inches(0.24), sec3_h - Inches(0.08))
+        tf = tb.text_frame
+        tf.word_wrap = True
+
+        p_t = tf.paragraphs[0]
+        p_t.text = ct
+        p_t.font.name = "Segoe UI"
+        p_t.font.size = Pt(9.5)
+        p_t.font.bold = True
+        p_t.font.color.rgb = col
+
+        for pt in cpts:
+            p_p = tf.add_paragraph()
+            p_p.text = pt
+            p_p.font.name = "Segoe UI"
+            p_p.font.size = Pt(8.2)
+            p_p.font.color.rgb = TEXT_SLATE
+            p_p.space_before = Pt(1.5)
+
+    # ── BOTTOM LEGEND & DATA FLOW STRIPE ──────────────────────────────────────
+    leg_y = Inches(6.94)
+    leg_box = s3.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.60), leg_y, Inches(12.133), Inches(0.22))
+    leg_box.fill.solid()
+    leg_box.fill.fore_color.rgb = RGBColor(14, 32, 24)
+    leg_box.line.color.rgb = CARD_BORDER
+
+    tf_leg = leg_box.text_frame
+    tf_leg.word_wrap = True
+    p_leg = tf_leg.paragraphs[0]
+    p_leg.text = "DATA FLOW:  [1] Sensors → STM32 (ADC/I2C)  |  [2] Telemetry → ESP32 (UART2)  |  [3] Cloud → Backend & Supabase (HTTPS)  |  [4] Advice → STM32 Validates  |  [5] Feedback → Soil Infiltration"
+    p_leg.font.name = "Segoe UI"
+    p_leg.font.size = Pt(8.2)
+    p_leg.font.bold = True
+    p_leg.font.color.rgb = ACCENT_GREEN
+    p_leg.alignment = PP_ALIGN.CENTER
 
     # =========================================================================
     # SLIDE 4: HARDWARE CORE (Matches page_5.png of PPT.pdf)
@@ -813,11 +908,12 @@ def build_deck():
         p_std.space_before = Pt(4)
 
     # Save Outputs
-    output_target1 = os.path.join(BASE_DIR, "TerraFlow_BioAI_SPIT_Major_Project.pptx")
-    output_target2 = os.path.join(BASE_DIR, "TerraFlow_BioAI_Final_Presentation.pptx")
-    output_target3 = os.path.join(BASE_DIR, "TerraFlow_BioAI_Major_Project_Presentation.pptx")
+    output_target1 = os.path.join(BASE_DIR, "TerraFlow_BioAI_Master_Presentation.pptx")
+    output_target2 = os.path.join(BASE_DIR, "TerraFlow_BioAI_SPIT_Major_Project.pptx")
+    output_target3 = os.path.join(BASE_DIR, "TerraFlow_BioAI_Final_Presentation.pptx")
+    output_target4 = os.path.join(BASE_DIR, "TerraFlow_BioAI_Major_Project_Presentation.pptx")
 
-    for tgt in [output_target1, output_target2, output_target3]:
+    for tgt in [output_target1, output_target2, output_target3, output_target4]:
         try:
             prs.save(tgt)
             print(f"[OK] Saved: {tgt}")
