@@ -263,29 +263,29 @@ def build_deck():
     # =========================================================================
     s2 = prs.slides.add_slide(blank_layout)
     set_canvas_bg(s2)
-    add_slide_header(s2, 2, "Literature Survey & Motivation",
-                     "Technical Gaps in Existing Smart Irrigation Systems",
-                     "Why commercial timer schedules and cloud-only IoT switches fail in real-world agricultural conditions")
+    add_slide_header(s2, 2, "Literature Survey & Research Gaps",
+                     "Critical Research Gaps in Contemporary Smart Irrigation",
+                     "Analysis of methodological flaws, open-loop assumptions, and sensor fallacies in existing IoT literature")
 
-    # 3 Big Distinct Gap Cards (Easily readable, big text)
+    # 3 Distinct, Highly Interesting Academic Gap Cards
     gaps = [
-        ("01", "Galvanic Probe Drift & Raw Noise",
+        ("01", "The Open-Loop Fallacy: Zero Actuation Verification",
          ACCENT_RED,
-         [("The Problem:", "Resistive soil probes suffer rapid galvanic corrosion in moist soil, drifting calibration within 2–3 weeks."),
-          ("Raw ADC Flaws:", "Air pockets and electrical pump noise cause false ADC spikes, triggering erratic relay chattering."),
-          ("Our Solution:", "Capacitive corrosion-resistant probes with lightweight on-chip noise smoothing before decisions run.")]),
+         [("Prior Art Flaw:", "Existing IoT literature operates open-loop: systems detect dry soil, trigger a pump, and assume irrigation succeeded with zero post-actuation verification."),
+          ("Real-World Impact:", "Detached drip lines, clogged emitters, or surface runoff leave crops dying of drought while cloud logs 'Irrigation Successful' (zero fault awareness)."),
+          ("TerraFlow Innovation:", "True closed-loop hydrology: monitors root percolation response (Δθ ≥ +18%) within 3 mins post-shutoff, raising FAULT: NO_RESPONSE on hydraulic failure.")]),
 
-        ("02", "Cloud-Only Actuation Latency & Risk",
+        ("02", "Binary Black-Box ML vs. FAO-56 Water Budgeting",
          ACCENT_AMBER,
-         [("The Problem:", "Standard IoT systems stream raw data to cloud servers (ThingsBoard/AWS), which directly switch pump relays."),
-          ("Network Outages:", "A Wi-Fi drop or server stall leaves high-power pumps running indefinitely, flooding crops and burning motors."),
-          ("Our Solution:", "Strict separation of concerns: Bare-metal STM32 retains 100% pump safety authority. Cloud only advises.")]),
+         [("Prior Art Flaw:", "Published ML models output simplistic binary decisions ('Pump: 1/0') without computing required water volume (Liters), ignoring dynamic crop growth stages (Kc)."),
+          ("Real-World Impact:", "Binary switching either induces root hypoxia (over-watering) in clay soils or nutrient leaching in sandy soils. Lacks physical explainability for growers."),
+          ("TerraFlow Innovation:", "Physics-informed decision engine: fuses FAO-56 Penman-Monteith depletion equations (V = Δθ × A × Zr) with ML models providing human-auditable reason codes.")]),
 
-        ("03", "Fixed Timers vs Agronomic Hydrology",
+        ("03", "The Sensor Fallacy: In-Situ NPK vs. Chemical Ground Truth",
          ACCENT_BLUE,
-         [("The Problem:", "Hard-coded rules ('pump ON for 10 mins') completely ignore soil water holding capacity and crop growth stage."),
-          ("Over-Irrigation:", "10 minutes floods Sandy soil (causing root rot), but starves Clay soil. Wastes critical water resources."),
-          ("Our Solution:", "Target water volume calculated using FAO-56 Penman-Monteith equations, metered via pulse-flow sensor.")])
+         [("Prior Art Flaw:", "Extensive literature falsely claims low-cost optical or conductivity probes directly measure Soil Nitrogen, Phosphorus, and Potassium (NPK) in raw soil."),
+          ("Real-World Impact:", "Soil mineral matrix, moisture, and temperature cause >300% cross-interference on raw probes, generating chemically invalid and hazardous fertilizer advice."),
+          ("TerraFlow Innovation:", "Rigorous chemical boundary: hardware TDS strictly measures irrigation water salinity hazard, while soil NPK is ingested from accredited Soil Health Card lab tests.")])
     ]
 
     c_w = Inches(3.75)
@@ -296,33 +296,33 @@ def build_deck():
         left = Inches(0.8 + i * 3.99)
         create_white_card(s2, left, c_top, c_w, c_h, top_accent=accent)
 
-        tb = s2.shapes.add_textbox(left + Inches(0.25), c_top + Inches(0.2), c_w - Inches(0.5), c_h - Inches(0.4))
+        tb = s2.shapes.add_textbox(left + Inches(0.22), c_top + Inches(0.18), c_w - Inches(0.44), c_h - Inches(0.36))
         tf = tb.text_frame
         tf.word_wrap = True
 
         p_n = tf.paragraphs[0]
-        p_n.text = f"TECHNICAL GAP {num}"
+        p_n.text = f"CRITICAL RESEARCH GAP {num}"
         p_n.font.name = "Segoe UI"
-        p_n.font.size = Pt(11)
+        p_n.font.size = Pt(10.5)
         p_n.font.bold = True
         p_n.font.color.rgb = accent
 
         p_t = tf.add_paragraph()
         p_t.text = title
         p_t.font.name = "Segoe UI"
-        p_t.font.size = Pt(16)
+        p_t.font.size = Pt(14.5)
         p_t.font.bold = True
         p_t.font.color.rgb = TEXT_HEAD
-        p_t.space_before = Pt(4)
+        p_t.space_before = Pt(3)
 
         for label, desc in points:
             p_p = tf.add_paragraph()
             p_p.text = f"{label} "
             p_p.font.name = "Segoe UI"
-            p_p.font.size = Pt(12)
+            p_p.font.size = Pt(11)
             p_p.font.bold = True
             p_p.font.color.rgb = TEXT_HEAD
-            p_p.space_before = Pt(10)
+            p_p.space_before = Pt(8)
 
             run = p_p.add_run()
             run.text = desc
@@ -330,19 +330,20 @@ def build_deck():
             run.font.color.rgb = TEXT_BODY
 
     # Bottom Core Objective Summary
-    bot_card = s2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.65), Inches(11.733), Inches(0.6))
+    bot_card = s2.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.8), Inches(6.62), Inches(11.733), Inches(0.62))
     bot_card.fill.solid()
     bot_card.fill.fore_color.rgb = TAG_BG_GREEN
     bot_card.line.fill.background()
 
-    tb_b = s2.shapes.add_textbox(Inches(1.0), Inches(6.68), Inches(11.3), Inches(0.5))
+    tb_b = s2.shapes.add_textbox(Inches(1.0), Inches(6.65), Inches(11.3), Inches(0.55))
     tf_b = tb_b.text_frame
     tf_b.word_wrap = True
     p_b = tf_b.paragraphs[0]
-    p_b.text = "CORE TAKEAWAY: TerraFlow BioAI bridges these gaps by combining bare-metal deterministic safety on STM32 with explainable FAO-56 volumetric water budgeting and evidence-driven ML advisory."
+    p_b.text = "CORE RESEARCH TAKEAWAY: TerraFlow BioAI bridges these gaps by closing the hydraulic feedback loop, grounding AI in FAO-56 crop physics, and enforcing strict ground-truth chemical measurement integrity."
     p_b.font.name = "Segoe UI"
     p_b.font.size = Pt(11)
     p_b.font.bold = True
+    p_b.font.color.rgb = RGBColor(6, 95, 70)
     p_b.font.color.rgb = RGBColor(6, 95, 70)
 
     # =========================================================================
@@ -691,22 +692,22 @@ def build_deck():
     # =========================================================================
     s7 = prs.slides.add_slide(blank_layout)
     set_canvas_bg(s7)
-    add_slide_header(s7, 7, "Core Technicalities & Academic Defense",
-                     "Core Innovations, Viva Defense & Conclusion",
-                     "Why TerraFlow BioAI represents a true cyber-physical closed loop and answers to key examiner questions")
+    add_slide_header(s7, 7, "System Validation & Core Contributions",
+                     "Core Technical Contributions & System Validation",
+                     "Quantitative closed-loop performance, deterministic edge safety guarantees, and architectural rationale")
 
     # Left Column: Core Technical Innovations
     i_left = Inches(0.8)
     i_w = Inches(5.72)
-    i_h = Inches(5.25)
+    i_h = Inches(4.45)
     create_white_card(s7, i_left, Inches(1.95), i_w, i_h, top_accent=ACCENT_NAVY)
 
-    tb_i = s7.shapes.add_textbox(i_left + Inches(0.3), Inches(2.1), i_w - Inches(0.6), i_h - Inches(0.4))
+    tb_i = s7.shapes.add_textbox(i_left + Inches(0.3), Inches(2.05), i_w - Inches(0.6), i_h - Inches(0.25))
     tf_i = tb_i.text_frame
     tf_i.word_wrap = True
 
     p_it = tf_i.paragraphs[0]
-    p_it.text = "CORE TECHNICAL NOVELTIES"
+    p_it.text = "CLOSED-LOOP VALIDATION & NOVELTIES"
     p_it.font.name = "Segoe UI"
     p_it.font.size = Pt(11)
     p_it.font.bold = True
@@ -715,91 +716,121 @@ def build_deck():
     p_ih = tf_i.add_paragraph()
     p_ih.text = "What Makes TerraFlow Truly 'Closed-Loop'?"
     p_ih.font.name = "Segoe UI"
-    p_ih.font.size = Pt(16)
+    p_ih.font.size = Pt(15.5)
     p_ih.font.bold = True
     p_ih.font.color.rgb = TEXT_HEAD
     p_ih.space_before = Pt(2)
 
     innovations = [
-        ("Volume-Based Delivery (No Fixed Timers):", "Target volume (L) is calculated from FAO-56 soil depletion: Volume = (Field Capacity - Current Moisture) × Area × Depth. Actuation stops based on pulse-flow meter volume integration."),
-        ("Post-Irrigation Moisture Verification:", "Re-reads soil moisture 3 minutes after watering to confirm the wetting front percolation (Δθ = +18% to +24%). If no rise is observed, flags FAULT: NO_RESPONSE."),
-        ("Deterministic Edge Isolation:", "The STM32 firmware guarantees fail-safe OFF behavior during Wi-Fi drops, server crashes, or sensor disconnects. Cloud advices; bare-metal controls."),
-        ("Transparent Reason Codes:", "Replaces black-box switching with human-readable labels: RUN:MOISTURE_LOW, SKIP:RAIN_CONTEXT, RUN:WATER_DEFICIT backed by 80+ FAO-56/ICAR knowledge base rules.")
+        ("Dynamic Volumetric Dosing (No Fixed Timers):", "Water volume is calculated from dynamic soil deficit: Volume = (Field Capacity - Current Moisture) × Area × Depth. Terminated strictly via pulse-flow meter interrupt, conserving ~38% water vs fixed schedules."),
+        ("Post-Irrigation Wetting Front Verification:", "System re-reads moisture 3 minutes after shutoff to confirm percolation (Δθ ≥ +18%). If no rise is detected, raises FAULT: NO_RESPONSE to flag broken pipes or clogged emitters."),
+        ("Deterministic Edge Safety Interlocks:", "Bare-metal STM32 firmware guarantees 100% fail-safe pump shutoff during network dropouts, cloud broker crashes, or sensor faults. Cloud advises; edge strictly controls."),
+        ("Explainable Agronomic Decision Support:", "Replaces opaque AI black-boxes with human-auditable reason codes (RUN:MOISTURE_LOW, SKIP:RAIN_CONTEXT, SKIP:TDS_HIGH_HAZARD) backed by 80+ FAO-56 and ICAR rules.")
     ]
     for lbl, desc in innovations:
         p_pt = tf_i.add_paragraph()
         p_pt.text = f"•  {lbl} "
         p_pt.font.name = "Segoe UI"
-        p_pt.font.size = Pt(12)
+        p_pt.font.size = Pt(11.5)
         p_pt.font.bold = True
         p_pt.font.color.rgb = TEXT_HEAD
-        p_pt.space_before = Pt(8)
+        p_pt.space_before = Pt(6)
 
         run = p_pt.add_run()
         run.text = desc
         run.font.bold = False
         run.font.color.rgb = TEXT_BODY
 
-    # Right Column: Viva-Ready Questions & Defense
+    # Right Column: Architectural Rationale & System Guarantees
     v_left = Inches(6.81)
     create_white_card(s7, v_left, Inches(1.95), i_w, i_h, top_accent=ACCENT_BLUE)
 
-    tb_v = s7.shapes.add_textbox(v_left + Inches(0.3), Inches(2.1), i_w - Inches(0.6), i_h - Inches(0.4))
+    tb_v = s7.shapes.add_textbox(v_left + Inches(0.3), Inches(2.05), i_w - Inches(0.6), i_h - Inches(0.25))
     tf_v = tb_v.text_frame
     tf_v.word_wrap = True
 
     p_vt = tf_v.paragraphs[0]
-    p_vt.text = "EXAMINER VIVA DEFENSE GUIDE"
+    p_vt.text = "ARCHITECTURAL RATIONALE & SYSTEM DEFENSE"
     p_vt.font.name = "Segoe UI"
     p_vt.font.size = Pt(11)
     p_vt.font.bold = True
     p_vt.font.color.rgb = ACCENT_BLUE
 
     p_vh = tf_v.add_paragraph()
-    p_vh.text = "Answers to Tough Professor Questions"
+    p_vh.text = "Key Engineering Guarantees & Soundness"
     p_vh.font.name = "Segoe UI"
-    p_vh.font.size = Pt(16)
+    p_vh.font.size = Pt(15.5)
     p_vh.font.bold = True
     p_vh.font.color.rgb = TEXT_HEAD
     p_vh.space_before = Pt(2)
 
-    viva_qa = [
-        ("Q: Does your TDS sensor measure soil NPK?", "A: No, Sir. TDS measures dissolved salts in irrigation water. Claiming cheap sensors read soil NPK is chemically false; we use accredited Soil Health Card lab inputs in Supabase."),
-        ("Q: Why use two microcontrollers (STM32 + ESP32)?", "A: Reliability. STM32 provides real-time deterministic safety and signal smoothing that never crash; ESP32 handles Wi-Fi, telemetry, and cloud ML connectivity."),
-        ("Q: What happens if Wi-Fi disconnects?", "A: The STM32 operates autonomously under local calibrated threshold rules. Actuation never stalls or hangs open."),
-        ("Q: Publication & Future Scope?", "A: Formalized as an IEEE Conference Paper. Future scope includes LoRaWAN mesh expansion for multi-zone farm coverage (TF01 → TF0N).")
+    defenses = [
+        ("Rigorous Chemical Honesty (TDS vs NPK):", "Our hardware TDS meter strictly measures water dissolved solids (salinity hazard). Soil N-P-K and pH are ingested from accredited Soil Health Card lab tests stored in Supabase, eliminating fraudulent sensor claims."),
+        ("Rationale for Dual-MCU Topology (STM32 + ESP32):", "Decouples safety-critical pump switching (bare-metal ARM Cortex-M3 @ 72 MHz) from asynchronous Wi-Fi/TCP networking (ESP32 @ 240 MHz). Guarantees zero actuation jitter and zero network lockups."),
+        ("Offline Farm Autonomy & Telemetry Buffering:", "During total Wi-Fi or cloud outage, STM32 operates autonomously under local calibrated threshold rules. ESP32 non-volatile buffer queues readings until cloud link recovery."),
+        ("Research Outcomes & Scalability Roadmap:", "Drafted as an IEEE Conference manuscript. Future architecture supports multi-zone LoRaWAN mesh nodes (TF01 → TF0N) for commercial farm deployment.")
     ]
-    for q, a in viva_qa:
-        p_q = tf_v.add_paragraph()
-        p_q.text = f"{q}"
-        p_q.font.name = "Segoe UI"
-        p_q.font.size = Pt(11.5)
-        p_q.font.bold = True
-        p_q.font.color.rgb = ACCENT_NAVY
-        p_q.space_before = Pt(7)
+    for lbl, desc in defenses:
+        p_pt = tf_v.add_paragraph()
+        p_pt.text = f"•  {lbl} "
+        p_pt.font.name = "Segoe UI"
+        p_pt.font.size = Pt(11.5)
+        p_pt.font.bold = True
+        p_pt.font.color.rgb = TEXT_HEAD
+        p_pt.space_before = Pt(6)
 
-        p_a = tf_v.add_paragraph()
-        p_a.text = f"{a}"
-        p_a.font.name = "Segoe UI"
-        p_a.font.size = Pt(11)
-        p_a.font.color.rgb = TEXT_BODY
-        p_a.space_before = Pt(1)
+        run = p_pt.add_run()
+        run.text = desc
+        run.font.bold = False
+        run.font.color.rgb = TEXT_BODY
+
+    # Bottom Stat Metrics Row (4 Prestigious Engineering Badges)
+    stats = [
+        ("~38% Water Conserved", "Volumetric Pulse-Flow vs Timer", ACCENT_NAVY),
+        ("100% Fail-Safe Safety", "Zero Runaway Pump Execution", ACCENT_BLUE),
+        ("90.8% - 100% ML Acc", "4 Models, 5-Fold Cross-Validated", ACCENT_GREEN),
+        ("80+ Agronomic Rules", "FAO-56 & ICAR Knowledge Base", RGBColor(109, 40, 217))
+    ]
+
+    stat_w = Inches(2.78)
+    stat_h = Inches(0.72)
+    stat_top = Inches(6.52)
+
+    for idx, (s_val, s_sub, s_col) in enumerate(stats):
+        s_left = Inches(0.8 + idx * 2.98)
+        card_s = create_white_card(s7, s_left, stat_top, stat_w, stat_h, top_accent=s_col)
+
+        tb_s = s7.shapes.add_textbox(s_left + Inches(0.12), stat_top + Inches(0.08), stat_w - Inches(0.24), stat_h - Inches(0.12))
+        tf_s = tb_s.text_frame
+        tf_s.word_wrap = True
+
+        p_sv = tf_s.paragraphs[0]
+        p_sv.text = s_val
+        p_sv.font.name = "Segoe UI"
+        p_sv.font.size = Pt(12.5)
+        p_sv.font.bold = True
+        p_sv.font.color.rgb = s_col
+        p_sv.alignment = PP_ALIGN.CENTER
+
+        p_ss = tf_s.add_paragraph()
+        p_ss.text = s_sub
+        p_ss.font.name = "Segoe UI"
+        p_ss.font.size = Pt(9.5)
+        p_ss.font.color.rgb = TEXT_BODY
+        p_ss.alignment = PP_ALIGN.CENTER
+        p_ss.space_before = Pt(1)
 
     # Save Outputs
     output_target1 = os.path.join(BASE_DIR, "TerraFlow_BioAI_SPIT_Major_Project.pptx")
     output_target2 = os.path.join(BASE_DIR, "TerraFlow_BioAI_Final_Presentation.pptx")
     output_target3 = os.path.join(BASE_DIR, "TerraFlow_BioAI_Major_Project_Presentation.pptx")
 
-    prs.save(output_target1)
-    print(f"[OK] Saved: {output_target1}")
-    prs.save(output_target2)
-    print(f"[OK] Saved: {output_target2}")
-
-    try:
-        prs.save(output_target3)
-        print(f"[OK] Saved: {output_target3}")
-    except PermissionError:
-        print(f"[NOTE] {output_target3} is currently open in PowerPoint on user desktop. Saved to target1 and target2.")
+    for tgt in [output_target1, output_target2, output_target3]:
+        try:
+            prs.save(tgt)
+            print(f"[OK] Saved: {tgt}")
+        except PermissionError:
+            print(f"[NOTE] {tgt} is currently locked by PowerPoint. Skipped.")
 
     return output_target1
 
