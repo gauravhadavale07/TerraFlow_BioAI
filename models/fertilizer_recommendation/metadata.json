@@ -1,0 +1,83 @@
+{
+  "model_name": "fertilizer_recommendation",
+  "algorithm": "XGBClassifier",
+  "features": [
+    "temperature",
+    "humidity",
+    "soil_moisture",
+    "soil_type_encoded",
+    "crop_type_encoded",
+    "nitrogen",
+    "phosphorus",
+    "potassium"
+  ],
+  "features_raw": [
+    "temperature",
+    "humidity",
+    "soil_moisture",
+    "soil_type",
+    "crop_type",
+    "nitrogen",
+    "phosphorus",
+    "potassium"
+  ],
+  "target": "fertilizer_name",
+  "classes": [
+    "10-26-26",
+    "14-35-14",
+    "17-17-17",
+    "20-20",
+    "28-28",
+    "DAP",
+    "Urea"
+  ],
+  "num_classes": 7,
+  "soil_type_mapping": {
+    "Black": 0,
+    "Clayey": 1,
+    "Loamy": 2,
+    "Red": 3,
+    "Sandy": 4
+  },
+  "crop_type_mapping": {
+    "Barley": 0,
+    "Cotton": 1,
+    "Groundnut": 2,
+    "Maize": 3,
+    "Millets": 4,
+    "Oilseeds": 5,
+    "Pulses": 6,
+    "Rice": 7,
+    "Sugarcane": 8,
+    "Tobacco": 9,
+    "Wheat": 10
+  },
+  "train_samples": 1584,
+  "test_samples": 396,
+  "accuracy": 1.0,
+  "f1_weighted": 1.0,
+  "cv_accuracy_mean": 0.999,
+  "cv_accuracy_std": 0.0012,
+  "feature_importances": {
+    "temperature": 0.0234,
+    "humidity": 0.0299,
+    "soil_moisture": 0.033,
+    "soil_type_encoded": 0.0238,
+    "crop_type_encoded": 0.0523,
+    "nitrogen": 0.3047,
+    "phosphorus": 0.2575,
+    "potassium": 0.2754
+  },
+  "sensor_mapping": {
+    "temperature": "BME280 ambient temperature (\u00b0C)",
+    "humidity": "BME280 relative humidity (%RH)",
+    "soil_moisture": "FC-28/YL-69 soil moisture sensor (%)",
+    "soil_type": "User configuration / soil classifier output",
+    "crop_type": "User selection",
+    "nitrogen": "Soil test N (kg/ha)",
+    "phosphorus": "Soil test P (kg/ha)",
+    "potassium": "Soil test K (kg/ha)"
+  },
+  "trained_at": "2026-11-01T13:14:41.799372",
+  "dataset_source": "Kaggle: gdabhishek/fertilizer-prediction (augmented 20x)"
+}

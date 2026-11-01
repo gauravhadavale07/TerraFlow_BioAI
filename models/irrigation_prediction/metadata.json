@@ -1,0 +1,99 @@
+{
+  "model_name": "irrigation_prediction",
+  "algorithm": "XGBClassifier",
+  "features": [
+    "temperature",
+    "humidity",
+    "soil_moisture",
+    "soil_type_encoded",
+    "crop_type_encoded",
+    "nitrogen",
+    "phosphorus",
+    "potassium",
+    "ph",
+    "rainfall"
+  ],
+  "features_raw": [
+    "temperature",
+    "humidity",
+    "soil_moisture",
+    "soil_type",
+    "crop_type",
+    "nitrogen",
+    "phosphorus",
+    "potassium",
+    "ph",
+    "rainfall"
+  ],
+  "target": "irrigation_needed",
+  "classes": [
+    "NO_IRRIGATION",
+    "IRRIGATE"
+  ],
+  "num_classes": 2,
+  "soil_type_mapping": {
+    "Alluvial": 0,
+    "Black": 1,
+    "Clayey": 2,
+    "Loamy": 3,
+    "Red": 4,
+    "Sandy": 5
+  },
+  "crop_type_mapping": {
+    "Chickpea": 0,
+    "Cotton": 1,
+    "Groundnut": 2,
+    "Maize": 3,
+    "Onion": 4,
+    "Potato": 5,
+    "Rice": 6,
+    "Soybean": 7,
+    "Tomato": 8,
+    "Wheat": 9
+  },
+  "train_samples": 4000,
+  "test_samples": 1000,
+  "accuracy": 0.908,
+  "f1_binary": 0.8938,
+  "precision": 0.8876,
+  "recall": 0.9,
+  "cv_accuracy_mean": 0.92,
+  "cv_accuracy_std": 0.0091,
+  "confusion_matrix": [
+    [
+      521,
+      49
+    ],
+    [
+      43,
+      387
+    ]
+  ],
+  "feature_importances": {
+    "temperature": 0.0346,
+    "humidity": 0.0296,
+    "soil_moisture": 0.2366,
+    "soil_type_encoded": 0.1621,
+    "crop_type_encoded": 0.0989,
+    "nitrogen": 0.027,
+    "phosphorus": 0.0242,
+    "potassium": 0.0276,
+    "ph": 0.0267,
+    "rainfall": 0.3326
+  },
+  "sensor_mapping": {
+    "temperature": "BME280 ambient temperature (\u00b0C)",
+    "humidity": "BME280 relative humidity (%RH)",
+    "soil_moisture": "FC-28/YL-69 soil moisture sensor (%)",
+    "soil_type": "User configuration / soil classifier",
+    "crop_type": "User selection",
+    "nitrogen": "Soil test N (kg/ha)",
+    "phosphorus": "Soil test P (kg/ha)",
+    "potassium": "Soil test K (kg/ha)",
+    "ph": "Soil test / pH sensor",
+    "rainfall": "Weather API (mm)"
+  },
+  "decision_logic": "Ground truth generated from FAO-56 inspired rules: soil moisture depletion vs crop-specific thresholds, VPD-based ET demand, rainfall offset, soil drainage factors.",
+  "trained_at": "2026-11-01T13:14:51.599376",
+  "dataset_source": "Synthetic (FAO-56 crop water requirement logic)"
+}
