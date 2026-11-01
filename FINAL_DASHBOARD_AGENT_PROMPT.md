@@ -101,9 +101,9 @@ Build a modern, single-page command console divided into 5 distinct cards/sectio
   $$\text{Target Volume (L)} = \text{Target Irrigation Depth (mm)} \times \text{Zone Area } (m^2)$$
   $$\text{Estimated Runtime (min)} = \frac{\text{Target Volume (L)}}{\text{Flow Rate (L/min)}}$$
 - **Delivery Progress Bar:** Target Volume (L) vs Delivered Volume (L) calculated from pulse-flow sensor integration
-- **Edge Hardware Safety Interlocks (STM32 Gateways):**
-  - Tank Level (Float Switch): `[✓ TANK SAFE]` or `[⚠️ FAULT: TANK LOW (Pump Blocked)]`
-  - Max Runtime Guard: Automatically aborts if continuous runtime exceeds 180 seconds
+- **Edge Safety Guards:**
+  - Max Runtime Guard: Automatically aborts pump actuation if continuous runtime exceeds 180 seconds to protect hardware
+  - Sensor Validity Gate: Verifies incoming readings are physically plausible before triggering actuation
 - **Manual Pump Action Buttons:** `[MANUAL START]` and `[EMERGENCY STOP]`
 
 #### 5. SECTION 4: AI AGRO-ADVISORY (ML PREDICTIONS FROM `/api/predict/full`):
@@ -161,8 +161,9 @@ Update all advisory cards with the returned response.
 Make sure the UI allows testing these 5 distinct academic scenarios via buttons or presets:
 1. **Scenario 1 (Drought Stress):** Dry soil (20%), High Temp (35°C), No rain $\rightarrow$ Triggers `IRRIGATE` (`RUN:MOISTURE_LOW`), Pump runs until target volume is reached.
 2. **Scenario 2 (Rainfall Offset):** Dry soil (25%), but Rainfall = 25 mm $\rightarrow$ Triggers `NO_IRRIGATION` (`SKIP:RAIN_CONTEXT`).
-3. **Scenario 3 (Safety Interlock):** Tank Float Switch is LOW $\rightarrow$ Blocks actuation, raises `FAULT:TANK_LOW`.
+3. **Scenario 3 (Safety Guard):** Max runtime timeout reached (180s) or invalid sensor value -> Automatically shuts off pump and triggers safety stop.
 4. **Scenario 4 (Fertilizer Deficit):** Input N=20 kg/ha $\rightarrow$ Advises `Urea`; Input P=8 kg/ha $\rightarrow$ Advises `DAP`.
 5. **Scenario 5 (Crop Suitability):** Changes zone soil/climate $\rightarrow$ Dynamically updates Top 5 ranked crop percentages.
 
 Now, generate the project, install dependencies, build the complete dashboard, and launch it!
+

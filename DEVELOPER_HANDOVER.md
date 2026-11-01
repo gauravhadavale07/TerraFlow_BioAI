@@ -141,7 +141,7 @@ To match our SPIT Project Report:
 3. **Actuation Card:**
    - Pump status (`RUNNING` / `OFF`)
    - Target volume vs Delivered volume progress bar
-   - Float switch interlock indicator (`SAFE` / `TANK LOW`)
+   - Max runtime safety guard (auto-cutoff at 180s)
 4. **Advisory Card:**
    - Display `advisory.irrigation.prediction` (`IRRIGATE` or `NO_IRRIGATION`)
    - Display `advisory.irrigation.reason_code` (e.g. `RUN:MOISTURE_LOW`, `SKIP:RAIN_CONTEXT`)
@@ -156,5 +156,5 @@ To match our SPIT Project Report:
 - **Do NOT claim that our hardware sensors measure N, P, or K.**
 - The TDS sensor measures water quality (dissolved solids), not soil NPK.
 - In TerraFlow, NPK values come from soil test health cards (or ICAR regional baseline data).
-- The STM32 always retains local pump safety authority (float switch, max runtime); the ML model advises whether irrigation is needed.
+- The edge controller always retains local pump safety authority (maximum runtime cutoff, manual override); the ML model advises whether irrigation is needed.
 
