@@ -8,4 +8,7 @@ __pycache__/
 .vscode/
 ~$*
 slide_images/
+ppt_pdf_images/
+ppt_pdf_summary.json
+read_ppt_pdf.py
 
